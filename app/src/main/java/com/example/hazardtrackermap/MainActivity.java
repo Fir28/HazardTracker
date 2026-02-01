@@ -139,11 +139,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         else if (id == R.id.action_share){
-            String url = "https://github.com/Fir28/ZakatGoldCalc.git"; // your app website
+            String url = "https://github.com/Fir28/HazardTracker.git"; // your app website
 
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out this Zakat Gold Calculator App: " + url);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out this Hazard Tracker App: " + url);
 
             startActivity(Intent.createChooser(shareIntent, "Share App"));
 

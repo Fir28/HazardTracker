@@ -17,7 +17,7 @@ import java.net.URL;
 public class SignupActivity extends AppCompatActivity {
 
     private EditText etUsername, etPassword, etRealName, etEmail;
-    private Button btnSignup;
+    private Button btnSignup, tvBackToLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +29,13 @@ public class SignupActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnSignup = findViewById(R.id.btnSignup);
+        tvBackToLogin = findViewById(R.id.tvBackToLogin);
 
         btnSignup.setOnClickListener(v -> signup());
+
+        tvBackToLogin.setOnClickListener(v -> {
+            startActivity(new Intent(SignupActivity.this, LoginActivity.class));
+        });
     }
 
     private void signup() {

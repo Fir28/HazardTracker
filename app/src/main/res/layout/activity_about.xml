@@ -44,7 +44,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Group: RCS2405A"
+                android:text="Group: RCS2405B"
                 android:textSize="18sp"
                 android:textColor="@color/primary_dark"
                 android:textStyle="bold"/>
@@ -147,7 +147,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autoLink="web"
-                android:text="https://github.com/Fir28/ZakatGoldCalc.git"
+                android:text="https://github.com/Fir28/HazardTracker.git"
                 android:textSize="13sp"
                 android:textColor="@color/primary_dark"
                 android:gravity="center"
@@ -156,7 +156,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="© 2024 RCS2405A | ICT602 Project"
+                android:text="© 2024 RCS2405B | ICT602 Project"
                 android:textSize="11sp"
                 android:textColor="#9E9E9E"
                 android:gravity="center"

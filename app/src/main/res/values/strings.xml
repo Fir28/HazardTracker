@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Hazard Tracker Map</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="website_url">https://github.com/Fir28/HazardTracker.git</string>
 </resources>

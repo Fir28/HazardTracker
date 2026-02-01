@@ -64,10 +64,22 @@ public class LoginActivity extends AppCompatActivity {
 
                 runOnUiThread(() -> {
                     if (json.optBoolean("success")) {
+                        // 1. Extract the name from the PHP response
+                        String realName = json.optString("real_name", username);
+
+                        // 2. SAVE the user info into the phone's memory (SharedPreferences)
+                        // This is the "notebook" the app uses to remember the user
+                        android.content.SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+                        android.content.SharedPreferences.Editor editor = prefs.edit();
+                        editor.putString("username", realName); // Matches the column in your DB
+                        editor.putBoolean("isLoggedIn", true);  // This enables auto-login
+                        editor.apply(); // Don't forget this! It locks the save in.
+
+                        // 3. Move to the next screen
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        intent.putExtra("REAL_NAME", json.optString("real_name"));
+                        intent.putExtra("REAL_NAME", realName);
                         startActivity(intent);
-                        finish(); // Close login screen
+                        finish();
                     } else {
                         Toast.makeText(this, json.optString("message"), Toast.LENGTH_SHORT).show();
                     }

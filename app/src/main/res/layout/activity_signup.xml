@@ -104,11 +104,13 @@
         android:layout_marginTop="32dp"
         app:cornerRadius="28dp"/>
 
-    <TextView
+    <Button
         android:id="@+id/tvBackToLogin"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Already have an account? Log In"
+        android:textAllCaps="false"
         android:textColor="@color/primary_dark"
         android:textStyle="bold"
         android:padding="16dp"

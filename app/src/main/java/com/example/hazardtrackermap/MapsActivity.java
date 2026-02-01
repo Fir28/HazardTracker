@@ -6,7 +6,6 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -104,7 +103,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // --- CROWDSOURCING LOGIC ---
 
     private void showReportDialog(LatLng latLng) {
-        final String[] hazardTypes = {"Flood", "Landslide", "Road Closure", "other"};
+        final String[] hazardTypes = {"Flood", "Landslide", "Road_Closure", "Other"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Report Hazard at this spot?");
@@ -115,12 +114,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             tempLoc.setLongitude(latLng.longitude);
             String locationName = getLocationName(tempLoc);
 
-            sendHazardToServer(latLng.latitude, latLng.longitude, locationName, selectedType);
+            sendHazardToServer(locationName, latLng.latitude, latLng.longitude, selectedType);
         });
         builder.show();
     }
 
-    private void sendHazardToServer(double lat, double lon, String locName, String type) {
+    private void sendHazardToServer(String locName, double lat, double lon, String type) {
+        // 1. READ the saved name from SharedPreferences
+        android.content.SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        // If for some reason no name is found, it will use "Anonymous"
+        String loggedInUser = prefs.getString("username", "Anonymous");
+
         new Thread(() -> {
             try {
                 URL url = new URL(BASE_URL + "add_hazard.php");
@@ -128,15 +132,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
 
-                // REQUIREMENT: Send User-Agent
-                String userAgent = "Android " + Build.VERSION.RELEASE + "; " + Build.MODEL;
+                String rawAgent = "Android " + Build.VERSION.RELEASE + " " + Build.MODEL;
+                String userAgent = rawAgent.length() > 100 ? rawAgent.substring(0, 100) : rawAgent;
                 conn.setRequestProperty("User-Agent", userAgent);
 
-                String postData = "latitude=" + lat +
+                // 2. Use the 'loggedInUser' variable here
+                String postData = "location_name=" + URLEncoder.encode(locName, "UTF-8") +
+                        "&latitude=" + lat +
                         "&longitude=" + lon +
-                        "&location_name=" + URLEncoder.encode(locName, "UTF-8") +
                         "&hazard_type=" + URLEncoder.encode(type.toLowerCase(), "UTF-8") +
-                        "&reporter_name=" + URLEncoder.encode("Student_User", "UTF-8");
+                        "&reporter_name=" + URLEncoder.encode(loggedInUser, "UTF-8");
 
                 OutputStream os = conn.getOutputStream();
                 os.write(postData.getBytes());
@@ -145,8 +150,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     runOnUiThread(() -> {
-                        Toast.makeText(this, "Hazard Reported!", Toast.LENGTH_SHORT).show();
-                        loadHazardsFromServer(); // Refresh markers
+                        Toast.makeText(this, "Hazard Reported by " + loggedInUser, Toast.LENGTH_SHORT).show();
+                        loadHazardsFromServer();
                     });
                 }
             } catch (Exception e) {
@@ -196,11 +201,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private BitmapDescriptor getMarkerColor(String type) {
-        switch (type.toLowerCase()) {
-            case "flood": return BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
-            case "landslide": return BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE);
-            case "road_closure": return BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
-            default: return BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
+        if (type == null) return BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
+
+        switch (type.toLowerCase().trim()) {
+            case "flood":
+                return BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
+            case "landslide":
+                return BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE);
+            case "road_closure": // Removed underscore to match your dialog
+                return BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
+            case "other":
+                return BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
+            default:
+                return BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
         }
     }
 

@@ -45,7 +45,7 @@ public class AboutActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_share) {
-            String url = "https://github.com/Fir28/ZakatGoldCalc.git";
+            String url = "https://github.com/Fir28/HazardTracker.git";
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
             shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out our Hazard Tracker Map project: " + url);
